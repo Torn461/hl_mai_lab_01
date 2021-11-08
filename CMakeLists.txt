@@ -25,7 +25,7 @@ link_directories("/usr/local/lib")
 add_executable(${EXAMPLE_BINARY} main.cpp 
                                  config/config.cpp 
                                  database/database.cpp
-                                 database/author.cpp)
+                                 database/person.cpp)
 
 
 target_include_directories(${EXAMPLE_BINARY} PRIVATE "${CMAKE_BINARY_DIR}")
