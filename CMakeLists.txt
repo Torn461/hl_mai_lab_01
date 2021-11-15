@@ -9,7 +9,8 @@ find_package(GTest REQUIRED)
 find_package(Threads)
 find_package(ZLIB)
 find_package(Poco REQUIRED COMPONENTS Foundation Util Net XML JSON Crypto NetSSL)
-
+find_package(Java 1.8 REQUIRED)
+find_package(JNI REQUIRED)
 
 if(NOT ${Poco_FOUND})
     message(FATAL_ERROR "Poco C++ Libraries not found.")
@@ -25,6 +26,7 @@ link_directories("/usr/local/lib")
 add_executable(${EXAMPLE_BINARY} main.cpp 
                                  config/config.cpp 
                                  database/database.cpp
+                                 database/cache.cpp
                                  database/person.cpp)
 
 
@@ -38,6 +40,11 @@ target_link_libraries(${EXAMPLE_BINARY} PRIVATE
                              "PocoData"
                              "PocoDataMySQL"
                              "mysqlclient"
+                             "ignite-binary"
+                             "ignite"
+                             "ignite-common"
+                             ${IGNITE_JNI_LIB}
+                             "ignite-thin-client"
                              ZLIB::ZLIB)
 
 

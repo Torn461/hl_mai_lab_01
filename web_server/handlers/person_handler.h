@@ -124,9 +124,31 @@ public:
             if (form.has("login"))
             {
                 std::string login = form.get("login");
+                bool no_cache = false;
+                if (form.has("no_cache"))
+                    no_cache = true;
+                // read from cache
+                // Шаблон «сквозное чтение»
+                // если записи нет в кеше - ситаем из БД
+                if (!no_cache)
+                {
+                    try
+                    {
+                        database::Person result = database::Person::read_from_cache_by_login(login);
+                        std::cout << "item from cache: " << login << std::endl;
+                        Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
+                        return;
+                    }
+                    catch (...)
+                    {
+                        std::cout << "cache missed for login: " << login << std::endl;
+                    }
+                }
                 try
                 {
                     database::Person result = database::Person::read_by_login(login);
+                    if (!no_cache)
+                        result.save_to_cache();
                     Poco::JSON::Stringifier::stringify(result.toJSON(), ostr);
                     return;
                 }
@@ -214,7 +236,10 @@ public:
                 {
                     try
                     {
+                        // Шаблон «сквозная-запись»
+                        // пишем и в БД и в кеш
                         person.save_to_mysql();
+                        person.save_to_cache();
                         ostr << "{ \"result\": true }";
                         return;
                     }
